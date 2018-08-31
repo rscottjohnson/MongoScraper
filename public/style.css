@@ -1,0 +1,75 @@
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+body {
+  background-color: #F2F6D0;
+  margin-bottom: 65px;
+}
+
+.jumbotron-custom {
+  background-image: url("../images/g-crescoli-365898-unsplash.jpg");
+  background-size: cover;
+  background-position: center center;
+  border-radius: 6px;
+  margin: 20px 0px 20px 0px;
+  opacity: 0.75;
+}
+
+.display-4 {
+  font-family: "Fredoka One", cursive;
+  color: #fdfefe;
+  text-shadow: 2px 2px #000000;
+}
+
+.lead {
+  font-family: 'Roboto Condensed', sans-serif;
+  color: #000000;
+  font-size: 32px;
+  background-color: rgba(52, 152, 219,0.6);
+}
+
+#wrapper {
+  width: 960px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-top: 5%;
+}
+#articles {
+  display: inline-block;
+  overflow: auto;
+  width: 60%;
+  height: 700px;
+}
+#notes {
+  float: right;
+  width: 30%;
+}
+textarea, input {
+  display: block;
+  width: 100%;
+  background-color: #FCF5C7;
+}
+input {
+  height: 36px;
+  font-size: 24px;
+}
+textarea {
+  height: 200px;
+  font-size: 18px;
+}
+
+.footer {
+  position: absolute;
+  bottom: 0;
+  height: 65px;
+  line-height: 55px;
+  width: 100%;
+  background-color: #0068FB;
+  color: #fdfefe;
+  text-align: center;
+  font-size: 12px;
+  border-top: 5px solid #fdfefe;
+  font-family: "IBM Plex Mono", monospace;
+}
