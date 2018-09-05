@@ -4,9 +4,8 @@ var Note = require("./Note");
 // Save a reference to the Schema constructor
 var Schema = mongoose.Schema;
 
-// Using the Schema constructor, create a new UserSchema object
+// Using the Schema constructor, create a new ArticleSchema object
 var ArticleSchema = new Schema({
-  // `title` is required and of type String
   title: {
     type: String,
     trim: true,
