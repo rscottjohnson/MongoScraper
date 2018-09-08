@@ -1,20 +1,27 @@
+// ==============================
 // Dependencies
+// ==============================
 var express = require("express");
 var bodyParser = require("body-parser");
 var logger = require("morgan");
 var mongoose = require("mongoose");
 var path = require("path");
 
+// ==============================
 // Scraping tools
+// ==============================
 var axios = require("axios");
 var cheerio = require("cheerio");
 
+// ==============================
 // Models
-var Article = require("./models/Article.js");
-var Note = require("./models/Note.js");
-// var db = require("./models");
+// ==============================
+var db = require("./models");
 
-var PORT = 3000;
+// ==============================
+// Express setup
+// ==============================
+var PORT = process.env.Port || 3000;
 
 // Initialize Express
 var app = express();
@@ -30,7 +37,10 @@ app.use(bodyParser.urlencoded({
 // Express.static to serve public folder as static directory
 app.use(express.static("public"));
 
-// Mongo DB connecion
+// ==============================
+// Mongo Database setup
+// ==============================
+
 // If deployed, use the deployed database. Otherwise use local mongoHeadlines database
 var MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost/mongoHeadlines";
 
@@ -39,16 +49,21 @@ var MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost/mongoHeadlines
 mongoose.Promise = Promise;
 mongoose.connect(MONGODB_URI);
 
+// ==============================
+// Handlebars setup
+// ==============================
+
 // Set Handlebars
 var exphbs = require("express-handlebars");
 
 app.engine("handlebars", exphbs({
   defaultLayout: "main",
-  partialsDir: path.join(__dirname, "views/layouts/partials")
 }));
 app.set("view engine", "handlebars");
 
+// ==============================
 // Routes
+// ==============================
 
 // GET route for scraping the chosen website
 app.get("/scrape", function (req, res) {
@@ -77,7 +92,7 @@ app.get("/scrape", function (req, res) {
         .attr("href");
 
       // Create a new Article using the `result` object built from scraping
-      Article.create(result)
+      db.Article.create(result)
         .then(function (dbArticle) {
           // View the added result in the console
           console.log(dbArticle);
@@ -151,17 +166,104 @@ app.post("/articles/:id", function (req, res) {
     });
 });
 
-app.get("/",function(req, res) {
-  Article.find({"saved": false}, function(error, data) {
-    var hbsObject = {
-      articles: data
-    };
-    console.log(hbsObject);
-    res.render("index", hbsObject);
-  });
+app.delete("/articles/:id", function (req, res) {
+  db.Note.findOneAndRemove({
+      _id: req.params.id
+    })
+    .then(function (dbNote) {
+      res.json(dbNote);
+    })
+    .catch(function (err) {
+      res.json(err);
+    });
 });
 
 // Start the server
 app.listen(PORT, function () {
   console.log("App running on port " + PORT + "!");
 });
+
+// Get all articles from the db
+app.get("/", function (req, res) {
+  db.Article.find({})
+  .then(function (dbArticle) {
+    var hbsObject = {
+      article: dbArticle
+    };
+    res.render("home", hbsObject);
+  })
+  .catch(function (err) {
+    res.json(err);
+  });
+});
+
+// app.get("/saved", function (req, res) {
+//   db.Article.find({
+//       saved: true
+//     })
+//     .populate("notes")
+//     .exec(function (error, articles) {
+//       var hbsObject = {
+//         article: articles
+//       };
+//       res.render("saved", hbsObject);
+//     });
+// });
+
+// app.post("/articles/save/:id", function (req, res) {
+//   db.Article.findOneAndUpdate({
+//       _id: req.params.id
+//     }, {
+//       saved: true
+//     })
+//     .exec(function (err, doc) {
+//       if (err) {
+//         console.log(err);
+//       } else {
+//         res.send(doc);
+//       }
+//     });
+// });
+
+// app.post("/articles/delete/:id", function (req, res) {
+//   db.Article.findOneAndUpdate({
+//       _id: req.params.id
+//     }, {
+//       saved: false,
+//       notes: []
+//     })
+//     .exec(function (err, doc) {
+//       if (err) {
+//         console.log(err);
+//       } else {
+//         res.send(doc);
+//       }
+//     });
+// });
+
+// app.delete("/notes/delete/:note_id/:article_id", function (req, res) {
+//   db.Note.findOneAndRemove({
+//     _id: req.params.note_id
+//   }, function (err) {
+//     if (err) {
+//       console.log(err);
+//       res.send(err);
+//     } else {
+//       db.Article.findOneAndUpdate({
+//           _id: req.params.article_id
+//         }, {
+//           $pull: {
+//             notes: req.params.note_id
+//           }
+//         })
+//         .exec(function (err) {
+//           if (err) {
+//             console.log(err);
+//             res.send(err);
+//           } else {
+//             res.send("Note Deleted");
+//           }
+//         });
+//     }
+//   });
+// });

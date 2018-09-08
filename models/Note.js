@@ -6,15 +6,19 @@ var Schema = mongoose.Schema;
 // Using the Schema constructor, create a new NoteSchema object
 var NoteSchema = new Schema({
   title: {
-    type: String
+    type: String,
+    required: true,
+    unique: true
   },
   body: {
-    type: String
-  },
-  article: {
-    type: Schema.Types.ObjectId,
-    ref: "Article"
+    type: String,
+    required: true,
+    unique: true
   }
+  // article: {
+  //   type: Schema.Types.ObjectId,
+  //   ref: "Article"
+  // }
 });
 
 // Create the model from the above schema using mongoose's model method

@@ -1,23 +1,16 @@
-<div class="container">
-  <div class="col-md-12">
-    {{#if article}} {{#each article}}
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h4>{{this.title}}</h4>
-      </div>
-      <div class="panel-body">
-        <p> {{this.summary}}</p>
-        <a href={{this.link}} target="_blank">{{this.link}}</a>
-        <br><br>
-        <button type="button" class="btn btn-success save" data-id={{this._id}}>Save Article</button>
-      </div>
-    </div>
-    {{/each}} {{else}}
-    <div class="panel panel-default text-center">
-      <div class="panel-body">
-        <h4>No articles... get to scraping!</h4>
-      </div>
-    </div>
-    {{/if}}
+<div class="jumbotron jumbotron-fluid">
+  <div class="container">
+    <h1 class="display-4">The Daily ReScraper</h1>
+    <p class="lead">Scrape up some Greenville news by hitting the Scrape button below!</p>
+  <button type="button" class="btn btn-success" id="scrapeBtn">Scrape</button>
+  </div>
+</div>
+
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-md-1"></div>
+    <div class="col-md-6" id="articles"></div>
+    <div class="col-md-4" id="notes"></div>
+    <div class="col-md-1"></div>
   </div>
 </div>
