@@ -129,6 +129,8 @@
 
 
 $(document).ready(function () {
+
+  // Scrape the Daily Reflector site
   $("#scrapeBtn").on("click", function () {
     $.ajax({
       method: "GET",
@@ -138,31 +140,6 @@ $(document).ready(function () {
       location.reload();
     });
   });
-
-  $.ajax({
-      method: "GET",
-      url: "/articles"
-    })
-    .then(function (data) {
-      console.log(data);
-
-      for (var i = 0; i < data.length; i++) {
-        var articleCard = $("<div class='card m-3'></div>");
-
-        var articleBody = $("<div class='card-body'></div>");
-        var title = $("<h5 class='card-title'>" + data[i].title + "</h5>");
-        var summary = $("<p class='card-text'>" + data[i].summary + "</p>");
-        var link = $("<a class='btn btn-secondary' href=" + data[i].link + " target='_blank' role='button'>Read More</a>");
-        var note = $("<button class='btn btn-secondary ml-2 notes' data-id=" + data[i]._id + " role='button'>Notes</button>");
-
-        $("#articles").prepend(articleCard);
-        articleCard.append(articleBody);
-        articleBody.append(title);
-        articleBody.append(summary);
-        articleBody.append(link);
-        articleBody.append(note);
-      }
-    });
 
   $(document).on("click", "button.notes", function (event) {
     event.preventDefault();
