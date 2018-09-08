@@ -1,39 +1,32 @@
 <!--Saved Articles Page-->
-
 <div class="container">
-
-    <div class="col-md-12 jumbotron">
-        <div class="text-center">
-            <h1> Saved Articles</h1>
+    <div class="jumbotron jumbotron-fluid">
+        <div class="container">
+            <h1 class="display-4">The Daily ReScraper</h1>
+            <p class="lead">Saved Articles</p>
+            <button type="button" class="btn btn-secondary" id="mainBtn">Main Page</button>
         </div>
     </div>
     <div class="col-md-12">
-        {{#if article}}
-            {{#each article}}
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <h4>{{this.title}}</h4>
-                    </div>
-                    <div class="panel-body">
-                        <p> {{this.summary}}</p>
-                        <a href={{this.link}} target="_blank">{{this.link}}</a>
-                        <br><br>
-                        <button type="button" class="btn btn-success addNote" data-toggle="modal" data-target="#noteModal{{this._id}}" data-id={{this._id}}>Add a Note</button>
-                        <button type="button" class="btn btn-danger delete" data-id={{this._id}}>Delete</button>
-                    </div>
-                </div>
-            {{/each}}
-        {{else}}
+        {{#if article}} {{#each article}}
         <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4>{{this.title}}</h4>
+            </div>
             <div class="panel-body">
-                <h4>You have no saved articles.</h4>
+                <p> {{this.summary}}</p>
+                <a href={{this.link}} target="_blank">{{this.link}}</a>
+                <br><br>
+                <button type="button" class="btn btn-secondary addNote" id="noteBtn" data-id={{this._id}}>Artlcle Notes</button>
+                <button type="button" class="btn btn-danger unsave" id="unsaveBtn" data-id={{this._id}}>Unsave Article</button>
             </div>
         </div>
+        {{/each}} {{else}}
+        {{!-- <div class="panel panel-default text-center">
+            <div class="panel-body">
+                <h4>Hit the 'scrape articles' button to add articles</h4>
+            </div>
+        </div> --}}
         {{/if}}
     </div>
 </div>
-
-<!--Clicked Notes Modal-->
-{{#each article}}
-    {{> notes-modal }}
-{{/each}}

@@ -1,4 +1,4 @@
-// ==============================
+ß// ==============================
 // Dependencies
 // ==============================
 var express = require("express");
@@ -65,19 +65,18 @@ app.set("view engine", "handlebars");
 // Routes
 // ==============================
 
-// GET route for scraping the chosen website
+// Scrape for new articles
 app.get("/scrape", function (req, res) {
-  // First, we grab the body of the html with request
+  // Grab the body of the html with request
   axios.get("http://www.reflector.com/News/").then(function (response) {
-    // Then, we load that into cheerio and save it to $ for a shorthand selector
+    // Load that into cheerio, save it to $ selector
     var $ = cheerio.load(response.data);
+    var webPath = "www.reflector.com";
 
-    // Grab artisles and do the following:
     $("div.content").each(function (i, element) {
       // Save an empty result object
       var result = {};
 
-      // Add the text and href of every link, and save them as properties of the result object
       result.title = $(this)
         .children("div.title")
         .children("a")
@@ -86,7 +85,7 @@ app.get("/scrape", function (req, res) {
         .children("div.tease")
         .children("p")
         .text();
-      result.link = $(this)
+      result.link = webPath + $(this)
         .children("div.title")
         .children("a")
         .attr("href");
@@ -103,39 +102,85 @@ app.get("/scrape", function (req, res) {
         });
     });
 
-    // If we were able to successfully scrape and save an Article, send a message to the client
+    // Send a message if successful
     res.send("Scrape Complete");
   });
 });
 
-// Route for getting all Articles from the db
-app.get("/articles", function (req, res) {
-  // Grab every document in the Articles collection
+// Get all scraped articles from the db
+app.get("/", function (req, res) {
   db.Article.find({})
     .then(function (dbArticle) {
-      // If we were able to successfully find Articles, send them back to the client
-      res.json(dbArticle);
+      var hbsObject = {
+        article: dbArticle
+      };
+      res.render("home", hbsObject);
     })
     .catch(function (err) {
-      // If an error occurred, send it to the client
       res.json(err);
     });
 });
 
-// Route for grabbing a specific Article by id, populate it with it's note
-app.get("/articles/:id", function (req, res) {
-  // Using the id passed in the id parameter, prepare a query that finds the matching one in our db...
-  db.Article.findOne({
-      _id: req.params.id
+// Save an article that's been scraped
+app.post("/save-article/:id", function (req, res) {
+
+  var articleId = req.params.id;
+
+  db.Article.findByIdAndUpdate(articleId, {
+      saved: true
     })
-    // ..and populate all of the notes associated with it
-    .populate("note")
     .then(function (dbArticle) {
-      // If we were able to successfully find an Article with the given id, send it back to the client
       res.json(dbArticle);
     })
     .catch(function (err) {
-      // If an error occurred, send it to the client
+      res.json(err);
+    });
+});
+
+// Display saved articles
+app.get("/saved", function (req, res) {
+  db.Article.find({
+      saved: true
+    })
+    .then(function (dbArticle) {
+      var hbsObject = {
+        article: dbArticle
+      };
+      res.render("saved", hbsObject);
+    })
+    .catch(function (err) {
+      res.json(err);
+    });
+});
+
+// Add a note to a saved article
+app.get("/articles/:id", function (req, res) {
+  db.Article.findOne({
+      _id: req.params.id
+    })
+    .then(function (dbNote) {
+      var hbsObject = {
+        note: dbNote
+      };
+      res.render("notes-modal", hbsObject);
+    })
+    .catch(function (err) {
+      res.json(err);
+    });
+});
+
+// Unsave an article that's been saved
+app.post("/unsave-article/:id", function (req, res) {
+
+  var articleId = req.params.id;
+
+  db.Article.findByIdAndUpdate(articleId, {
+      saved: false
+    })
+    .then(function (dbArticle) {
+      res.json(dbArticle);
+    })
+    .catch(function (err) {
       res.json(err);
     });
 });
@@ -182,88 +227,3 @@ app.delete("/articles/:id", function (req, res) {
 app.listen(PORT, function () {
   console.log("App running on port " + PORT + "!");
 });
-
-// Get all articles from the db
-app.get("/", function (req, res) {
-  db.Article.find({})
-  .then(function (dbArticle) {
-    var hbsObject = {
-      article: dbArticle
-    };
-    res.render("home", hbsObject);
-  })
-  .catch(function (err) {
-    res.json(err);
-  });
-});
-
-// app.get("/saved", function (req, res) {
-//   db.Article.find({
-//       saved: true
-//     })
-//     .populate("notes")
-//     .exec(function (error, articles) {
-//       var hbsObject = {
-//         article: articles
-//       };
-//       res.render("saved", hbsObject);
-//     });
-// });
-
-// app.post("/articles/save/:id", function (req, res) {
-//   db.Article.findOneAndUpdate({
-//       _id: req.params.id
-//     }, {
-//       saved: true
-//     })
-//     .exec(function (err, doc) {
-//       if (err) {
-//         console.log(err);
-//       } else {
-//         res.send(doc);
-//       }
-//     });
-// });
-
-// app.post("/articles/delete/:id", function (req, res) {
-//   db.Article.findOneAndUpdate({
-//       _id: req.params.id
-//     }, {
-//       saved: false,
-//       notes: []
-//     })
-//     .exec(function (err, doc) {
-//       if (err) {
-//         console.log(err);
-//       } else {
-//         res.send(doc);
-//       }
-//     });
-// });
-
-// app.delete("/notes/delete/:note_id/:article_id", function (req, res) {
-//   db.Note.findOneAndRemove({
-//     _id: req.params.note_id
-//   }, function (err) {
-//     if (err) {
-//       console.log(err);
-//       res.send(err);
-//     } else {
-//       db.Article.findOneAndUpdate({
-//           _id: req.params.article_id
-//         }, {
-//           $pull: {
-//             notes: req.params.note_id
-//           }
-//         })
-//         .exec(function (err) {
-//           if (err) {
-//             console.log(err);
-//             res.send(err);
-//           } else {
-//             res.send("Note Deleted");
-//           }
-//         });
-//     }
-//   });
-// });

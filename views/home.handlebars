@@ -4,7 +4,8 @@
         <div class="container">
             <h1 class="display-4">The Daily ReScraper</h1>
             <p class="lead">Scrape up some Greenville news by hitting the Scrape button below!</p>
-            <button type="button" class="btn btn-success" id="scrapeBtn">Scrape</button>
+            <button type="button" class="btn btn-primary" id="scrapeBtn">Scrape Articles</button>
+            <button type="button" class="btn btn-secondary" id="savedBtn">View Saved</button>
         </div>
     </div>
     <div class="col-md-12">
@@ -17,7 +18,7 @@
                 <p> {{this.summary}}</p>
                 <a href={{this.link}} target="_blank">{{this.link}}</a>
                 <br><br>
-                <button type="button" class="btn btn-success save" data-id={{this._id}}>Save Article</button>
+                <button type="button" class="btn btn-success save" id="saveBtn" data-id={{this._id}}>Save Article</button>
             </div>
         </div>
         {{/each}} {{else}}
